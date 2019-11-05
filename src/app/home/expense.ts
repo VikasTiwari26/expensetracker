@@ -4,5 +4,10 @@ export interface Expense{
     currency:string,
     amount:number,
     convertedAmount:number,
-    nativeCurrency:string
+}
+
+export interface ExpenseData{
+    nativeCurrency:string,
+    total:number,
+    data:Expense[]
 }

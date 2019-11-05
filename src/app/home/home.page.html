@@ -2,10 +2,11 @@
   <form  name="frm" #frm="ngForm" (ngSubmit)="addExpense(frm);">
       
       <div class="form-group">
-          <label for="name">
-             Date:
-          </label>
-          <input type="date" class="form-control" name="date"  ngModel required>
+          
+          <ion-item>
+            <ion-label>Date:</ion-label>
+            <ion-datetime displayFormat="DD/MM/YYYY" placeholder="Select Date" name="date" [max]="today" ngModel required></ion-datetime>
+          </ion-item>
       </div>
       <div class="form-group">
           <label for="name">
@@ -45,7 +46,7 @@
 
 <div class="container">
   <ul *ngFor="let expense of expenseList" >
-      <li>{{ expense.date }}</li>
+      <li>{{ expense.date | date}}</li>
       <li>{{ expense.name }}</li>
       <li>{{ expense.amount }} {{ expense.currency }}</li>
       <li>{{ expense.convertedAmount }} {{ expense.nativeCurrency }}</li>
