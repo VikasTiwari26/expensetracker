@@ -1,60 +1,80 @@
-<div class="container">
+<ion-item>
   <form  name="frm" #frm="ngForm" (ngSubmit)="addExpense(frm);">
       
-      <div class="form-group">
+      <ion-item>
           
           <ion-item>
-            <ion-label>Date:</ion-label>
-            <ion-datetime displayFormat="DD/MM/YYYY" placeholder="Select Date" name="date" [max]="today" ngModel required></ion-datetime>
+            <ion-label  class="ion-text-wrap">Date:</ion-label>
+            <ion-datetime displayFormat="DD/MM/YYYY" placeholder="Select Date" name="date" [max]="currentDate" ngModel required></ion-datetime>
           </ion-item>
-      </div>
-      <div class="form-group">
-          <label for="name">
+      </ion-item>
+      <ion-item>
+          <ion-label   class="ion-text-wrap" for="name">
               Name:
-          </label>
-          <input type="text" class="form-control" name="name" ngModel required>
-      </div>
-      <div class="select">
-          <label for="currency">
-           Host Currency: <select  name="currency" ngModel required>
-                      <option>INR</option>
-                      <option>INR</option>
-                      <option>INR</option>
-                    </select>
-          </label>
+          </ion-label>
+          <ion-input type="text" name="name" ngModel required></ion-input>
+      </ion-item>
+      <ion-item>
+          <ion-label class="ion-text-wrap" for="hostCurrency">
+           Host Currency:
+        </ion-label>
+           <ion-select  name="hostCurrency" ngModel required>
+
+                      <ion-select-option >INR</ion-select-option>
+                      <ion-select-option>USD</ion-select-option>
+                      <ion-select-option>EURO</ion-select-option>
+                    </ion-select>
+        
           
-      </div>
-      <div class="form-group">
-          <label for="amount">
+      </ion-item>
+      <ion-item>
+          <ion-label class = "list list-inset" for="amount">
                   Amount:
-          </label>
-          <input type="number"  class="form-control" name="amount" ngModel required>
-      </div>
-      <div class="select">
-          <label for="currency">
-           Native Currency: <select  name="nativeCurrency" ngModel required>
-                      <option>INR(70)</option>
-                      <option>INR(60)</option>
-                      <option>INR(50)</option>
-                    </select>
-          </label>
-      </div>
-      <button type="submit" name="button" class="btn btn-primary" [disabled]="frm.invalid" >Add Expense</button>
+          </ion-label>
+          <ion-input type="number"  name="amount" ngModel required></ion-input>
+      </ion-item>
+      <ion-item>
+          <ion-label class="ion-text-wrap" for="nativeCurrency">
+           Native Currency: </ion-label>
+                      <ion-select  name="nativeCurrency" ngModel required>
+                      <ion-select-option selected>JPY</ion-select-option>
+                      <!-- <option>EURO</option>
+                      <option>INR</option> -->
+                    </ion-select>
+      </ion-item>
+      <ion-button type="submit" name="button"  [disabled]="frm.invalid" >Add Expense</ion-button>
   </form>
-</div>
+</ion-item>
 
 
-<div class="container">
-  <ul *ngFor="let expense of expenseList" >
-      <li>{{ expense.date | date}}</li>
-      <li>{{ expense.name }}</li>
-      <li>{{ expense.amount }} {{ expense.currency }}</li>
-      <li>{{ expense.convertedAmount }} {{ expense.nativeCurrency }}</li>
-  </ul>
-</div>
+<ion-item class="card">
+  <ion-item  class="card-cstm" *ngFor="let expense of expenseList" >
+      <h4>{{ expense.hostCurrency }}</h4>
+           <ion-item *ngFor="let item of expense.data">
+              <ion-list class="inner card">
+               <ion-item> 
+                {{ item.date | date}}
+                {{ item.name }}
+                {{ item.amount }} {{ expense.hostCurrency }} 
+                {{ item.convertedAmount }} {{ item.nativeCurrency }}
+                   
+               </ion-item>
+            </ion-list>
+           </ion-item> 
+      
+      <h6>Total amount : {{expense.total}}</h6>
+  </ion-item>
+    <h5>Grand Total : {{ grandTotal }}</h5>
 
-<div class="container">
-  <ul>
-      <li> <span>{{ totalExpense }}</span> <span>{{ convertedTotalExpense }}</span></li>
-  </ul>
-</div>
+  <ion-item>  
+    <ion-label>History:</ion-label>
+        <ion-select (ionChange)="listSelector($event)">
+            <ion-select-option value="today">Today</ion-select-option>
+            <ion-select-option value="yesterday">Yesterday</ion-select-option>
+            <ion-select-option value="lastWeek">Last Week</ion-select-option>
+            <ion-select-option value="lastMonth">Last Month</ion-select-option>
+            <ion-select-option value="lastYear">Last Year</ion-select-option>
+            <ion-select-option value="totalExpenditure">Total Expenditure</ion-select-option>
+        </ion-select>
+ </ion-item>
+</ion-item>
