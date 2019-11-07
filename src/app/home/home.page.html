@@ -1,4 +1,3 @@
-<ion-item>
   <form  name="frm" #frm="ngForm" (ngSubmit)="addExpense(frm);">
       
       <ion-item>
@@ -44,37 +43,34 @@
       </ion-item>
       <ion-button type="submit" name="button"  [disabled]="frm.invalid" >Add Expense</ion-button>
   </form>
-</ion-item>
 
 
-<ion-item class="card">
-  <ion-item  class="card-cstm" *ngFor="let expense of expenseList" >
-      <h4>{{ expense.hostCurrency }}</h4>
+<div >
+  <ion-item-group  *ngFor="let expense of expenseList" >
+      <ion-item-divider>
+        <ion-label>{{ expense.hostCurrency }}
+          <span>Total amount : {{expense.total}}</span>
+        </ion-label>
+      </ion-item-divider>
            <ion-item *ngFor="let item of expense.data">
-              <ion-list class="inner card">
-               <ion-item> 
                 {{ item.date | date}}
                 {{ item.name }}
                 {{ item.amount }} {{ expense.hostCurrency }} 
                 {{ item.convertedAmount }} {{ item.nativeCurrency }}
                    
                </ion-item>
-            </ion-list>
-           </ion-item> 
+           </ion-item-group> 
       
-      <h6>Total amount : {{expense.total}}</h6>
-  </ion-item>
     <h5>Grand Total : {{ grandTotal }}</h5>
-
+</div>
   <ion-item>  
-    <ion-label>History:</ion-label>
+    <ion-label>History Of Expenses:</ion-label>
         <ion-select (ionChange)="listSelector($event)">
             <ion-select-option value="today">Today</ion-select-option>
             <ion-select-option value="yesterday">Yesterday</ion-select-option>
-            <ion-select-option value="lastWeek">Last Week</ion-select-option>
-            <ion-select-option value="lastMonth">Last Month</ion-select-option>
+            <ion-select-option value="lastWeek">Last 7 Days</ion-select-option>
+            <ion-select-option value="lastMonth">Last 30 Days</ion-select-option>
             <ion-select-option value="lastYear">Last Year</ion-select-option>
             <ion-select-option value="totalExpenditure">Total Expenditure</ion-select-option>
         </ion-select>
  </ion-item>
-</ion-item>

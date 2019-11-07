@@ -1,3 +1,4 @@
+import { ExpensedataService } from './../services/expensedata.service';
 import { element } from 'protractor';
 import { Component } from '@angular/core';
 import { Expense, ExpenseData } from './expense';
@@ -13,98 +14,19 @@ export class HomePage {
 
   filterdArray:ExpenseData[]=[];
   currentDate:string =  moment().format();
-  expenseList: ExpenseData[] = [
-    {
-      
-       hostCurrency: "INR",
-       total: 308,
-       data:[
-         {
-          amount: 200,
-          convertedAmount: 308,
-          date: new Date ("2019-11-06T15:19:25.245+05:30"),
-          name: "food",
-          nativeCurrency: "JPY",
-         }
-       ]
-    },
-    {
-      
-      hostCurrency: "INR",
-      total: 308,
-      data:[
-        {
-         amount: 200,
-         convertedAmount: 308,
-         date: new Date ("2018-11-06T15:19:25.245+05:30"),
-         name: "food",
-         nativeCurrency: "JPY",
-        }
-      ]
-   },
-    {
-      hostCurrency: "USD",
-      total: 10908,
-      data:[
-        {
-          amount: 100,
-          convertedAmount: 10908,
-          date: new Date ("2019-11-04T15:40:12.354+05:30"),
-          name: "travel",
-          nativeCurrency: "JPY",
-        }
-      ]
-    },
-    {
-      hostCurrency: "USD",
-      total: 10908,
-      data:[
-        {
-          amount: 100,
-          convertedAmount: 10908,
-          date: new Date ("2019-10-04T15:40:12.354+05:30"),
-          name: "travel",
-          nativeCurrency: "JPY",
-        }
-      ]
-    },
-    {
-      hostCurrency: "EURO",
-      total: 6039,
-      data:[
-        {
-          amount: 50,
-          convertedAmount: 6039,
-          date: new Date ("2019-11-05T15:41:32.861+05:30"),
-          name: "Rent",
-          nativeCurrency: "JPY"
-        }
-      ]
-    },
-    {
-      hostCurrency: "EURO",
-      total: 6039,
-      data:[
-        {
-          amount: 50,
-          convertedAmount: 6039,
-          date: new Date ("2019-11-03T15:41:32.861+05:30"),
-          name: "Rent",
-          nativeCurrency: "JPY"
-        }
-      ]
-    }
-  ];
+  public expenseList = [];
   totalExpense:number=0;
   convertedTotalExpense:number=0;
   grandTotal: number=0;
 
- 
-  
 
-  constructor() { }
+  constructor(private _expenseListService:ExpensedataService) {
+    
+  }
 
   ngOnInit() { 
+    this.expenseList = this._expenseListService.getExpenseList();
+    this.finalExpenditure();
   }
 
 
@@ -145,11 +67,11 @@ export class HomePage {
 
           }
 
-    
-        
-  
+           
+
      frm.reset()
     }
+    
 
     listSelector(event){
       console.log(event);
@@ -183,106 +105,146 @@ export class HomePage {
     }
 
     today(){
+      let sum=0;
       let currentDate=moment().format('YYYY-MM-DD');
          this.expenseList.forEach((element)=>{
           let total =0;
           let arr = [];
           element.data.forEach(item => {
              let itemDate=moment(item.date).format('YYYY-MM-DD');
-             console.log(moment(itemDate).isSame(currentDate));
             if(moment(itemDate).isSame(currentDate)){
               total=total+item.convertedAmount;
-              arr.push(element);
+              arr.push(item);
             }
           });
+
           if(arr.length){
           this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
+          sum=sum+total;
+          
         }
         });
+        this.grandTotal=sum;
+        console.log(this.grandTotal);
     }
 
+
     yesterday(){
-      let currentDate=moment().format('YYYY-MM-DD');
+      let sum=0;
+      let currentDate=moment().subtract(1,'day').format('YYYY-MM-DD');
       this.expenseList.forEach((element)=>{
        let total =0;
        let arr = [];
        element.data.forEach(item => {
           let itemDate=moment(item.date).format('YYYY-MM-DD');
-          console.log(moment(itemDate).isBefore(currentDate,'day'));
-         if(moment(itemDate).isBefore(currentDate,'day')){
+         if(moment(itemDate).isSame(currentDate)){
            total=total+item.convertedAmount;
-           arr.push(element);
+           arr.push(item);
          }
        });
        if(arr.length){
        this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
-       console.log(this.filterdArray);
+       sum=sum+total;
      }
      });
+        this.grandTotal=sum;
+        console.log(this.grandTotal);
     }
 
     lastWeek(){
-
+      let sum=0;
+      let currentDate=moment().subtract(7,'days').format('YYYY-MM-DD');
+      this.expenseList.forEach((element)=>{
+       let total =0;
+       let arr = [];
+       element.data.forEach(item => {
+          let itemDate=moment(item.date).format('YYYY-MM-DD');
+         if(moment(itemDate).isAfter(currentDate)){
+           total=total+item.convertedAmount;
+           arr.push(item);
+         }
+       });
+       if(arr.length){
+       this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
+       sum=sum+total;
+     }
+     });
+     this.grandTotal=sum;
+     console.log(this.grandTotal);
     }
 
     lastMonth(){
-      let currentDate=moment().format('YYYY-MM-DD');
+      let sum =0;
+      let currentDate=moment().subtract(30,'days').format('YYYY-MM-DD');
       this.expenseList.forEach((element)=>{
        let total =0;
        let arr = [];
        element.data.forEach(item => {
           let itemDate=moment(item.date).format('YYYY-MM-DD');
-          console.log(moment(itemDate).isBefore(currentDate,'month'));
-         if(moment(itemDate).isBefore(currentDate,'month')){
+         if(moment(itemDate).isAfter(currentDate)){
            total=total+item.convertedAmount;
-           arr.push(element);
+           arr.push(item);
          }
        });
        if(arr.length){
        this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
-       console.log(this.filterdArray);
+       sum=sum+total;
      }
      });
+     this.grandTotal=sum;
+     console.log(this.grandTotal);
     }
 
     lastYear(){
+      let sum =0;
       let currentDate=moment().format('YYYY-MM-DD');
       this.expenseList.forEach((element)=>{
        let total =0;
        let arr = [];
        element.data.forEach(item => {
           let itemDate=moment(item.date).format('YYYY-MM-DD');
-          console.log(moment(itemDate).isBefore(currentDate,'year'));
          if(moment(itemDate).isBefore(currentDate,'year')){
            total=total+item.convertedAmount;
-           arr.push(element);
+           arr.push(item);
          }
        });
        if(arr.length){
        this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
-       console.log(this.filterdArray);
+       sum=sum+total;
      }
      });
+     this.grandTotal=sum;
+     console.log(this.grandTotal);
     }
 
     totalExpenditure(){
+      let sum=0;
       let currentDate=moment().format('YYYY-MM-DD');
       this.expenseList.forEach((element)=>{
        let total =0;
        let arr = [];
        element.data.forEach(item => {
           let itemDate=moment(item.date).format('YYYY-MM-DD');
-          console.log(moment(itemDate).isBefore(currentDate,'day'));
-         if(moment(itemDate).isBefore(currentDate,'day')){
+         if(moment(itemDate).isSameOrBefore(currentDate,'day')){
            total=total+item.convertedAmount;
-           arr.push(element);
+           arr.push(item);
          }
        });
        if(arr.length){
        this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
-       console.log(this.filterdArray);
+       sum=sum+total;
      }
      });
+     this.grandTotal=sum;
+     console.log(this.grandTotal);
+    }
+
+    finalExpenditure(){
+      let total=0;
+      this.expenseList.forEach((elem)=>{
+        total=total+elem.total;
+      })
+      this.grandTotal=total
     }
 
 }
