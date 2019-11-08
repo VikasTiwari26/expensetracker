@@ -1,3 +1,4 @@
+import { ExpensedataService } from './../services/expensedata.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -19,7 +20,8 @@ import { HomePage } from './home.page';
       }
     ])
   ],
-  declarations: [HomePage]
+  declarations: [HomePage],
+  providers:[ExpensedataService]
 })
 export class HomePageModule {
 }

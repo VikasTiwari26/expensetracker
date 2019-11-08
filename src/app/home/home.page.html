@@ -4,7 +4,7 @@
           
           <ion-item>
             <ion-label  class="ion-text-wrap">Date:</ion-label>
-            <ion-datetime displayFormat="DD/MM/YYYY" placeholder="Select Date" name="date" [max]="currentDate" ngModel required></ion-datetime>
+            <ion-datetime displayFormat="YYYY-MM-DD" placeholder="Select Date" name="date" [max]="currentDate" ngModel required></ion-datetime>
           </ion-item>
       </ion-item>
       <ion-item>
@@ -19,9 +19,9 @@
         </ion-label>
            <ion-select  name="hostCurrency" ngModel required>
 
-                      <ion-select-option >INR</ion-select-option>
-                      <ion-select-option>USD</ion-select-option>
-                      <ion-select-option>EURO</ion-select-option>
+                      <ion-select-option [value]="item" *ngFor="let item of currencyList">{{item.currencyName}}({{item.currecyCode}})</ion-select-option>
+                      <!-- <ion-select-option>USD</ion-select-option>
+                      <ion-select-option>EURO</ion-select-option> -->
                     </ion-select>
         
           
@@ -48,20 +48,20 @@
 <div >
   <ion-item-group  *ngFor="let expense of expenseList" >
       <ion-item-divider>
-        <ion-label>{{ expense.hostCurrency }}
-          <span>Total amount : {{expense.total}}</span>
+        <ion-label>{{ expense.hostCurrency.currencyName }}
+          <span>Total amount : {{expense.total | number:'0.1-2'}}</span>
         </ion-label>
       </ion-item-divider>
            <ion-item *ngFor="let item of expense.data">
                 {{ item.date | date}}
                 {{ item.name }}
-                {{ item.amount }} {{ expense.hostCurrency }} 
-                {{ item.convertedAmount }} {{ item.nativeCurrency }}
+                {{ item.amount | number:'0.1-2' }} {{ expense.hostCurrency.currencyName }} 
+                {{ item.convertedAmount | number:'0.1-2' }} {{ item.nativeCurrency }}
                    
                </ion-item>
            </ion-item-group> 
       
-    <h5>Grand Total : {{ grandTotal }}</h5>
+    <h5>Grand Total : {{ grandTotal | number:'0.1-2' }}</h5>
 </div>
   <ion-item>  
     <ion-label>History Of Expenses:</ion-label>
@@ -74,3 +74,19 @@
             <ion-select-option value="totalExpenditure">Total Expenditure</ion-select-option>
         </ion-select>
  </ion-item>
+
+<ion-item-group  *ngFor="let content of filterdArray">
+    <ion-item-divider>
+        <ion-label>{{ content.hostCurrency }}
+          <span>Total amount : {{ content.total | number:'0.1-2' }}</span>
+        </ion-label>
+      </ion-item-divider>
+      <ion-item *ngFor="let item of content.data">
+          {{ item.date | date}}
+          {{ item.name }}
+          {{ item.amount | number:'0.1-2' }} {{content.hostCurrency }} 
+          {{ item.convertedAmount | number:'0.1-2' }} {{ item.nativeCurrency }}
+             
+         </ion-item>
+      
+</ion-item-group>

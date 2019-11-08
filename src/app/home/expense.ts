@@ -7,7 +7,11 @@ export interface Expense{
 }
 
 export interface ExpenseData{
-    hostCurrency:string,
+    hostCurrency:{
+        currecyCode:string,
+        currencyName: string
+    },
     total:number,
     data:Expense[]
 }
+

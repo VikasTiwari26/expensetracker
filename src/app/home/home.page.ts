@@ -1,3 +1,4 @@
+import { currencyList } from './currency';
 import { ExpensedataService } from './../services/expensedata.service';
 import { element } from 'protractor';
 import { Component } from '@angular/core';
@@ -11,46 +12,80 @@ import { OnInit } from '@angular/core';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-
+  currencyList=currencyList;
+  latestRateList:any;
+  
   filterdArray:ExpenseData[]=[];
-  currentDate:string =  moment().format();
+  currentDate:string =  moment().format('YYYY-MM-DD');
   public expenseList = [];
   totalExpense:number=0;
   convertedTotalExpense:number=0;
   grandTotal: number=0;
+  pastDate:string;
+  pastRateList:any;
 
 
-  constructor(private _expenseListService:ExpensedataService) {
+  constructor(private expenseListService:ExpensedataService) {
+    
+  }
+  
+  ngOnInit() { 
+    this.getLatestConversionRate();
+  
+    this.finalExpenditure();
+    
+  }
+  getLatestConversionRate(){
+    this.expenseListService.getlatestConversionRate().subscribe(result => {
+      console.log(result);
+      this.latestRateList=result.rates;
+    },
+    error =>{
+      console.log(error);
+    })
+  }
+ async getPastConversionRate(date){
     
   }
 
-  ngOnInit() { 
-    this.expenseList = this._expenseListService.getExpenseList();
-    this.finalExpenditure();
-  }
-
-
   addExpense(frm){
+    console.log(frm.value);
     let expense:Expense;
     let hostCurr=frm.value.hostCurrency;
+    let date = moment(frm.value.date).format('YYYY-MM-DD').toString();
     delete frm.value.hostCurrency;
      expense = frm.value;
-          switch(hostCurr){
-            case'USD':{
-              expense.convertedAmount = 109.08*expense.amount
-              break;
-            }
-            case'EURO':{
-              expense.convertedAmount = 120.78*expense.amount
-              break;
-            }
-            case'INR':{
-              expense.convertedAmount = 1.54*expense.amount
-              break;
-            }
-            default:
-                break;
-          }
+     this.getPastConversionRate(date).then(result=>{
+       console.log(date);
+      console.log(result);
+      console.log('result')
+     }).catch(err=>{
+       console.log(err);
+     })
+     if(this.currentDate == date){
+          expense.convertedAmount = (this.latestRateList['JPY']/this.latestRateList[hostCurr.currecyCode])*expense.amount;
+     }
+     else {
+       if(this.pastDate==date){
+        expense.convertedAmount = (this.pastRateList['JPY']/this.pastRateList[hostCurr.currecyCode])*expense.amount;
+        console.log(this.pastRateList);
+        console.log(expense.convertedAmount);
+      }
+       else{
+        this.expenseListService.getlatestConversionRate(date).subscribe(result => {
+          console.log(result);
+          this.pastRateList=result.rates;
+          this.pastDate=date;
+          expense.convertedAmount = (this.pastRateList['JPY']/this.pastRateList[hostCurr.currecyCode])*expense.amount;
+          console.log(expense.convertedAmount);
+          },
+        error =>{
+          console.log(error);
+        })
+        
+       }
+     }
+         
           let expenseFlag=false;
          this.expenseList.forEach((element,index) => {
           if(element.hostCurrency == hostCurr){
@@ -64,7 +99,6 @@ export class HomePage {
           if(!expenseFlag){
             this.expenseList.push({hostCurrency:hostCurr,data:[{...expense}],total:expense.convertedAmount})
             this.grandTotal=this.grandTotal+expense.convertedAmount;
-
           }
 
            
@@ -78,31 +112,39 @@ export class HomePage {
       let selectedEvent = event.detail.value;
         switch(selectedEvent){
           case('today'):{
+            this.filterdArray=[];
             this.today();
             break;
           }
           case('yesterday'):{
+            this.filterdArray=[];
             this.yesterday();
             break;
           }
           case('lastWeek'):{
+            this.filterdArray=[];
             this.lastWeek();
             break;
           }
           case('lastMonth'):{
+            this.filterdArray=[];
             this.lastMonth();
             break;
           }
           case('lastYear'):{
+            this.filterdArray=[];
             this.lastYear();
             break;
           }
           case('totalExpenditure'):{
+            this.filterdArray=[];
+
             this.totalExpenditure();
             break;
           }
         }
     }
+    
 
     today(){
       let sum=0;
@@ -119,7 +161,7 @@ export class HomePage {
           });
 
           if(arr.length){
-          this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
+          this.filterdArray.push({hostCurrency:element.hostCurrency.currencyName,total:element.total,data:arr});
           sum=sum+total;
           
         }
@@ -127,6 +169,7 @@ export class HomePage {
         this.grandTotal=sum;
         console.log(this.grandTotal);
     }
+
 
 
     yesterday(){
@@ -143,12 +186,13 @@ export class HomePage {
          }
        });
        if(arr.length){
-       this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
+        this.filterdArray.push({hostCurrency:element.hostCurrency.currencyName,total:element.total,data:arr});
        sum=sum+total;
      }
      });
         this.grandTotal=sum;
         console.log(this.grandTotal);
+        
     }
 
     lastWeek(){
@@ -165,7 +209,7 @@ export class HomePage {
          }
        });
        if(arr.length){
-       this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
+        this.filterdArray.push({hostCurrency:element.hostCurrency.currencyName,total:element.total,data:arr});
        sum=sum+total;
      }
      });
@@ -187,7 +231,7 @@ export class HomePage {
          }
        });
        if(arr.length){
-       this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
+        this.filterdArray.push({hostCurrency:element.hostCurrency.currencyName,total:element.total,data:arr});
        sum=sum+total;
      }
      });
@@ -209,7 +253,7 @@ export class HomePage {
          }
        });
        if(arr.length){
-       this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
+        this.filterdArray.push({hostCurrency:element.hostCurrency.currencyName,total:element.total,data:arr});
        sum=sum+total;
      }
      });
@@ -231,7 +275,7 @@ export class HomePage {
          }
        });
        if(arr.length){
-       this.filterdArray.push({hostCurrency:element.hostCurrency,total:element.total,data:arr});
+        this.filterdArray.push({hostCurrency:element.hostCurrency.currencyName,total:element.total,data:arr});
        sum=sum+total;
      }
      });
