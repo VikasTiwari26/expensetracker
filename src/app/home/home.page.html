@@ -1,4 +1,6 @@
-  <form  name="frm" #frm="ngForm" (ngSubmit)="addExpense(frm);">
+ <a href="#" [routerLink]="['/converter']" >Currency Converter</a>
+ 
+ <form  name="frm" #frm="ngForm" (ngSubmit)="addExpense(frm);">
       
       <ion-item>
           
@@ -61,7 +63,7 @@
                </ion-item>
            </ion-item-group> 
       
-    <h5>Grand Total : {{ grandTotal | number:'0.1-2' }}</h5>
+    <h5>Grand Total (in Native Currency) : {{ grandTotal | number:'0.1-2' }}</h5>
 </div>
   <ion-item>  
     <ion-label>History Of Expenses:</ion-label>

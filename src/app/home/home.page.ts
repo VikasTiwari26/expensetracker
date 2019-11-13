@@ -44,9 +44,6 @@ export class HomePage {
       console.log(error);
     })
   }
- async getPastConversionRate(date){
-    
-  }
 
   addExpense(frm){
     console.log(frm.value);
@@ -55,29 +52,25 @@ export class HomePage {
     let date = moment(frm.value.date).format('YYYY-MM-DD').toString();
     delete frm.value.hostCurrency;
      expense = frm.value;
-     this.getPastConversionRate(date).then(result=>{
-       console.log(date);
-      console.log(result);
-      console.log('result')
-     }).catch(err=>{
-       console.log(err);
-     })
      if(this.currentDate == date){
           expense.convertedAmount = (this.latestRateList['JPY']/this.latestRateList[hostCurr.currecyCode])*expense.amount;
-     }
-     else {
+          this.addToList(hostCurr,expense);
+      
+        } else {
        if(this.pastDate==date){
         expense.convertedAmount = (this.pastRateList['JPY']/this.pastRateList[hostCurr.currecyCode])*expense.amount;
         console.log(this.pastRateList);
-        console.log(expense.convertedAmount);
+        this.addToList(hostCurr,expense);
+
       }
        else{
         this.expenseListService.getlatestConversionRate(date).subscribe(result => {
           console.log(result);
           this.pastRateList=result.rates;
           this.pastDate=date;
-          expense.convertedAmount = (this.pastRateList['JPY']/this.pastRateList[hostCurr.currecyCode])*expense.amount;
+          expense.convertedAmount = (result.rates['JPY']/result.rates[hostCurr.currecyCode])*expense.amount;
           console.log(expense.convertedAmount);
+          this.addToList(hostCurr,expense);
           },
         error =>{
           console.log(error);
@@ -86,7 +79,15 @@ export class HomePage {
        }
      }
          
-          let expenseFlag=false;
+          
+
+           
+
+     frm.reset()
+    }
+    
+    addToList(hostCurr,expense){
+      let expenseFlag=false;
          this.expenseList.forEach((element,index) => {
           if(element.hostCurrency == hostCurr){
             expenseFlag=true;
@@ -100,12 +101,7 @@ export class HomePage {
             this.expenseList.push({hostCurrency:hostCurr,data:[{...expense}],total:expense.convertedAmount})
             this.grandTotal=this.grandTotal+expense.convertedAmount;
           }
-
-           
-
-     frm.reset()
     }
-    
 
     listSelector(event){
       console.log(event);
@@ -156,6 +152,8 @@ export class HomePage {
              let itemDate=moment(item.date).format('YYYY-MM-DD');
             if(moment(itemDate).isSame(currentDate)){
               total=total+item.convertedAmount;
+              console.log(total);
+              console.log(item.convertedAmount);
               arr.push(item);
             }
           });
@@ -182,6 +180,8 @@ export class HomePage {
           let itemDate=moment(item.date).format('YYYY-MM-DD');
          if(moment(itemDate).isSame(currentDate)){
            total=total+item.convertedAmount;
+           console.log(total);
+           console.log(item.convertedAmount);
            arr.push(item);
          }
        });
@@ -206,6 +206,8 @@ export class HomePage {
          if(moment(itemDate).isAfter(currentDate)){
            total=total+item.convertedAmount;
            arr.push(item);
+           console.log(total);
+           console.log(item.convertedAmount);
          }
        });
        if(arr.length){
@@ -227,6 +229,8 @@ export class HomePage {
           let itemDate=moment(item.date).format('YYYY-MM-DD');
          if(moment(itemDate).isAfter(currentDate)){
            total=total+item.convertedAmount;
+           console.log(total);
+           console.log(item.convertedAmount);
            arr.push(item);
          }
        });
@@ -249,6 +253,8 @@ export class HomePage {
           let itemDate=moment(item.date).format('YYYY-MM-DD');
          if(moment(itemDate).isBefore(currentDate,'year')){
            total=total+item.convertedAmount;
+           console.log(total);
+           console.log(item.convertedAmount);
            arr.push(item);
          }
        });
@@ -271,6 +277,8 @@ export class HomePage {
           let itemDate=moment(item.date).format('YYYY-MM-DD');
          if(moment(itemDate).isSameOrBefore(currentDate,'day')){
            total=total+item.convertedAmount;
+           console.log(total);
+           console.log(item.convertedAmount);
            arr.push(item);
          }
        });
