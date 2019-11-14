@@ -1,20 +1,25 @@
   <ion-item>
       <ion-label>Date:</ion-label>
       <ion-datetime displayFormat="YYYY-MM-DD" placeholder="Select Date" 
-      [max]="currentDate" [(ngModel)]="date"></ion-datetime>
+      [max]="currentDate" [(ngModel)]="date" (ionChange)="getLatestConversionRate()"></ion-datetime>
   </ion-item>
 
     <ion-item>
       <ion-label>
         Select Currency:
       </ion-label>
+      <ion-select  [(ngModel)]="baseCurrency">
+        <ion-select-option [value]="item" 
+            *ngFor="let item of currencyList; let i=index">{{item.currencyName}}({{item.currecyCode}})
+        </ion-select-option>
+      </ion-select>
        
   </ion-item>
   <ion-item>
       <ion-label>
      Add New Currency:
     </ion-label>
-  <ion-select  (ionChange)="addToList()" [(ngModel)]="selectedCurrency">
+  <ion-select  (ionChange)="addToList()" [(ngModel)]="newCurrency">
     <ion-select-option [value]="item" 
        *ngFor="let item of currencyList; let i=index">{{item.currencyName}}({{item.currecyCode}})
     </ion-select-option>
@@ -28,23 +33,17 @@
 
 
 <ion-list>
-    <!-- <ion-reorder-group  id="reorder" (ionItemReorder)="doReorder($event)" [disabled]="disabled"> -->
-      <!-- <ion-reorder> -->
+    <ion-reorder-group  id="reorder" (ionItemReorder)="doReorder($event)" [disabled]="false">
         <ion-item-sliding  *ngFor="let content of list; let i=index">
-            <!-- (press)="handlePress()" -->
-              <ion-item >
+              <ion-item (press)="handlePress()">
                   <ion-label>{{content.currencyName}}({{content.currecyCode}}) :</ion-label>
                   {{amount*this.latestRateList[content.currecyCode]/this.latestRateList[baseCurrency.currecyCode] | number:'0.1-2'}}
-              </ion-item>
-
+                  <ion-reorder slot="end"></ion-reorder>
+                </ion-item>
             <ion-item-options side="end">
               <ion-item-option color="danger" (click)="delete(content)">Delete</ion-item-option>
             </ion-item-options>
           </ion-item-sliding>
-       <!-- </ion-reorder> -->
-  <!-- </ion-reorder-group> -->
+      
+  </ion-reorder-group>
 </ion-list>
-
-
-
-

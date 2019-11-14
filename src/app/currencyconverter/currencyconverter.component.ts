@@ -24,22 +24,25 @@ export class CurrencyconverterComponent implements OnInit {
       currencyName:'United States Dollar',
       currecyCode:'USD'
     };
-    items:FormData;
+   
     amount:number=1;
     pastRateList:any;
     pastDate:string;
-    selectedCurrency:SelectedCurrency;
+    newCurrency:SelectedCurrency;
     disabled=true;
+
+
     
     list:SelectedCurrency[]=[
       {
-        currencyName:'Indian Rupee',
-        currecyCode:'INR'
+        currecyCode:'INR',
+        currencyName:'Indian Rupee'
+       
 
       },
       {
-        currencyName:'Japanese Yen',
-        currecyCode:'JPY'
+        currecyCode:'JPY',
+        currencyName:'Japanese Yen'
       }
     ];
 
@@ -49,12 +52,14 @@ export class CurrencyconverterComponent implements OnInit {
     }
 
   ngOnInit() {
-    this.getLatestConversionRate(this.date);
+    
+    this.getLatestConversionRate();
   
   }
 
-  getLatestConversionRate(date){
-    this.convertedAmountService.getlatestConversionRate(date).subscribe(result => {
+  getLatestConversionRate(){
+    this.date=moment(this.date).format('YYYY-MM-DD');
+    this.convertedAmountService.getlatestConversionRate(this.date).subscribe(result => {
       console.log(result);
       this.latestRateList=result.rates;
     },
@@ -68,11 +73,12 @@ export class CurrencyconverterComponent implements OnInit {
   doReorder(ev:any){
     console.log(ev.detail);
     ev.detail.complete();
+    console.log(this.list)
   };
   
 addToList(){
-  console.log(this.selectedCurrency);
-  this.list.push({...this.selectedCurrency});
+  console.log(this.newCurrency);
+  this.list.push({...this.newCurrency});
 }
 
 delete(content){
